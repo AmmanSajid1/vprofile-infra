@@ -17,6 +17,10 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 
+# Explicitly allow non-sensitive environment configuration
+!environments/nonprod/terraform.tfvars
+!environments/prod/terraform.tfvars
+
 # Local override files
 override.tf
 override.tf.json
