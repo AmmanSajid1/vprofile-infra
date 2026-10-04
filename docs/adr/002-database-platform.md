@@ -1,4 +1,4 @@
-# ADR-003: Database Platform
+# ADR-002: Database Platform
 
 ## Status
 Accepted

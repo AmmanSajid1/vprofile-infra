@@ -1,4 +1,4 @@
-# ADR-004: Application Ingress
+# ADR-003: Application Ingress
 
 ## Status
 Accepted

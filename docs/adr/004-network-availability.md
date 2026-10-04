@@ -1,4 +1,4 @@
-# ADR-005: Network Availability
+# ADR-004: Network Availability
 
 ## Status
 Accepted
