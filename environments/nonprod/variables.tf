@@ -103,3 +103,44 @@ variable "k8s_version" {
   type        = string
   default     = "1.35"
 }
+
+# RDS configuration
+variable "backup_retention_period" {
+  description = "Backup retention period for the RDS instance"
+  type        = number
+}
+
+variable "deletion_protection" {
+  description = "Whether to enable deletion protection for the RDS instance"
+  type        = bool
+}
+
+variable "skip_final_snapshot" {
+  description = "Whether to skip creation of a final snapshot when the RDS instance is deleted"
+  type        = bool
+}
+
+variable "db_instance_class" {
+  description = "Instance class for the RDS instance"
+  type        = string
+}
+
+variable "db_name" {
+  description = "Name of the RDS database"
+  type        = string
+}
+
+variable "db_username" {
+  description = "Username for the RDS database"
+  type        = string
+}
+
+variable "storage_size" {
+  description = "Storage size for the RDS database"
+  type        = number
+}
+
+variable "multi_az" {
+  description = "Whether the RDS instance should be multi-AZ"
+  type        = bool
+}

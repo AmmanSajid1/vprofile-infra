@@ -12,7 +12,7 @@ availability_zones       = ["us-east-1a", "us-east-1b"]
 nat_gateway_count        = 1
 
 # EKS configuration
-cluster_name                    = "vprofile-nonprod-eks-cluster"
+cluster_name = "vprofile-nonprod-eks-cluster"
 #cluster_admin_arn = "arn:aws:iam::<ACCOUNT_ID>:user/<ADMIN_USER>"
 k8s_version                     = "1.35"
 node_instance_type              = "t3.medium"
@@ -22,5 +22,16 @@ node_min_capacity               = 1
 public_api_endpoint_access      = true
 private_api_endpoint_access     = true
 public_api_access_allowed_cidrs = ["92.40.168.242/32"] #myip
+
+# RDS Configuration
+db_instance_class       = "db.t3.micro"
+db_name                 = "accounts"
+db_username             = "admin"
+storage_size            = 20
+multi_az                = false
+backup_retention_period = 1
+deletion_protection     = false
+skip_final_snapshot     = true
+
 
 

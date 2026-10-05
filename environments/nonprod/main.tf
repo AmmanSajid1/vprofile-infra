@@ -34,3 +34,24 @@ module "eks" {
     Environment = var.environment
   }
 }
+
+module "rds" {
+  source                   = "../../modules/rds"
+  environment              = var.environment
+  vpc_id                   = module.vpc.vpc_id
+  private_db_subnet_ids    = module.vpc.private_db_subnet_ids
+  app_security_group_id    = module.eks.cluster_security_group_id
+  backup_retention_period  = var.backup_retention_period
+  deletion_protection      = var.deletion_protection
+  skip_final_snapshot      = var.skip_final_snapshot
+  db_instance_class        = var.db_instance_class
+  db_name                  = var.db_name
+  db_username              = var.db_username
+  storage_size             = var.storage_size
+  multi_az                 = var.multi_az
+
+  tags = {
+    Project     = var.project_name
+    Environment = var.environment
+  }
+}
