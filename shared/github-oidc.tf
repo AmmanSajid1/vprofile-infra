@@ -46,6 +46,7 @@ data "aws_iam_policy_document" "ecr_push" {
       "ecr:BatchCheckLayerAvailability",
       "ecr:PutImage",
       "ecr:BatchGetImage",
+      "ecr:DescribeImages",
     ]
     resources = ["arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.ecr_repo_name}"]
   }
