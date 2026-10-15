@@ -27,3 +27,34 @@ variable "ecr_repo_name" {
   type        = string
   default     = "vprofile-app"
 }
+
+# ACM certificate configuration
+
+variable "hosted_zone_name" {
+  description = "Existing public Route 53 hosted zone"
+  type        = string
+  default     = "ammandevops.xyz"
+}
+
+variable "domain_map_env" {
+  description = "Certificate domain names per environment"
+  type        = map(list(string))
+
+  default = {
+    nonprod = [
+      "dev.ammandevops.xyz",
+      "staging.ammandevops.xyz"
+    ]
+
+    prod = [
+      "app.ammandevops.xyz"
+    ]
+  }
+
+  validation {
+    condition = alltrue([
+      for domains in values(var.domain_map_env) : length(domains) > 0
+    ])
+    error_message = "Every environment must have at least one domain."
+  }
+}
