@@ -21,7 +21,7 @@ node_max_capacity               = 3
 node_min_capacity               = 1
 public_api_endpoint_access      = true
 private_api_endpoint_access     = true
-public_api_access_allowed_cidrs = ["92.40.168.242/32"] #myip
+public_api_access_allowed_cidrs = ["145.40.135.158/32"] #myip
 
 # RDS Configuration
 db_instance_class       = "db.t3.micro"

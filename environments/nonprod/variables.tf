@@ -11,7 +11,8 @@ variable "project_name" {
 }
 
 variable "environment" {
-  type = string
+  type    = string
+  default = "nonprod"
 }
 
 # VPC Configuration
@@ -143,4 +144,10 @@ variable "storage_size" {
 variable "multi_az" {
   description = "Whether the RDS instance should be multi-AZ"
   type        = bool
+}
+
+variable "tags" {
+  description = "Tags to apply to the resources"
+  type        = map(string)
+  default     = {}
 }
