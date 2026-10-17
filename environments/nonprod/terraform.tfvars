@@ -12,8 +12,8 @@ availability_zones       = ["us-east-1a", "us-east-1b"]
 nat_gateway_count        = 1
 
 # EKS configuration
-cluster_name = "vprofile-nonprod-eks-cluster"
-#cluster_admin_arn = "arn:aws:iam::<ACCOUNT_ID>:user/<ADMIN_USER>"
+cluster_name                    = "vprofile-nonprod-eks-cluster"
+cluster_admin_arn               = "arn:aws:iam::464209272334:user/Amman"
 k8s_version                     = "1.35"
 node_instance_type              = "t3.medium"
 node_desired_capacity           = 2

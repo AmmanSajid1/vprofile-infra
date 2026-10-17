@@ -43,3 +43,17 @@ resource "aws_ecr_lifecycle_policy" "vprofile_ecr_policy" {
 }
 EOF
 }
+
+resource "aws_ecr_repository" "vprofile_flyway" {
+  name                 = "vprofile-flyway"
+  image_tag_mutability = "IMMUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
+resource "aws_ecr_lifecycle_policy" "vprofile_flyway_policy" {
+  repository = aws_ecr_repository.vprofile_flyway.name
+  policy     = aws_ecr_lifecycle_policy.vprofile_ecr_policy.policy
+}

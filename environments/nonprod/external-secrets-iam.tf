@@ -12,8 +12,17 @@ resource "aws_iam_policy" "external_secrets" {
           "secretsmanager:DescribeSecret"
         ]
         Resource = [
-          "arn:aws:secretsmanager:us-east-1:464209272334:secret:rds!db-17567b02-fbb1-4b10-a3dd-e646753b276e-HG8KXr",
-          "arn:aws:secretsmanager:us-east-1:464209272334:secret:vprofile/nonprod/rabbitmq-gs9l2P"
+          "arn:aws:secretsmanager:us-east-1:464209272334:secret:vprofile/nonprod/rabbitmq-gs9l2P",
+          data.aws_secretsmanager_secret.mysql_app.arn
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameter"
+        ]
+        Resource = [
+          aws_ssm_parameter.rds_endpoint.arn
         ]
       }
     ]
@@ -51,4 +60,5 @@ resource "aws_eks_pod_identity_association" "external_secrets" {
   namespace       = "external-secrets"
   service_account = "external-secrets"
   role_arn        = aws_iam_role.external_secrets.arn
+  depends_on      = [aws_iam_role_policy_attachment.external_secrets, module.eks]
 }

@@ -48,7 +48,10 @@ data "aws_iam_policy_document" "ecr_push" {
       "ecr:BatchGetImage",
       "ecr:DescribeImages",
     ]
-    resources = ["arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.ecr_repo_name}"]
+    resources = [
+      aws_ecr_repository.vprofile_ecr.arn,
+      aws_ecr_repository.vprofile_flyway.arn
+    ]
   }
 
   statement {
