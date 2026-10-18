@@ -31,4 +31,8 @@ resource "helm_release" "external_secrets" {
       }
     })
   ]
+
+  depends_on = [
+    helm_release.aws_load_balancer_controller
+  ]
 }
