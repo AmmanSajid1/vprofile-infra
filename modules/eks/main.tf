@@ -56,6 +56,26 @@ resource "aws_iam_role" "vpc_cni" {
   tags = var.tags
 }
 
+resource "aws_iam_role" "ebs_csi" {
+  name = "${var.cluster_name}-ebs-csi-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "pods.eks.amazonaws.com"
+      }
+      Action = [
+        "sts:AssumeRole",
+        "sts:TagSession"
+      ]
+    }]
+  })
+
+  tags = var.tags
+}
+
 resource "aws_iam_role" "platform_admin" {
   name = "${var.cluster_name}-platform-admin-role"
 
@@ -85,6 +105,11 @@ resource "aws_iam_role_policy_attachment" "vpc_cni" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
+resource "aws_iam_role_policy_attachment" "ebs_csi" {
+  role       = aws_iam_role.ebs_csi.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+}
+
 resource "aws_iam_role_policy_attachment" "node_worker_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.eks_node.name
@@ -98,26 +123,26 @@ resource "aws_iam_role_policy_attachment" "node_ecr_pull_policy" {
 
 
 resource "aws_eks_cluster" "vprofile_eks_cluster" {
-    name = var.cluster_name
-    
-    access_config {
-        authentication_mode = "API"
-    }
+  name = var.cluster_name
 
-    role_arn = aws_iam_role.eks_cluster.arn
-    version = var.k8s_version
-    tags = var.tags
+  access_config {
+    authentication_mode = "API"
+  }
 
-    vpc_config {
-        subnet_ids = var.private_app_subnet_ids
-        endpoint_public_access = var.public_api_endpoint_access
-        endpoint_private_access = var.private_api_endpoint_access
-        public_access_cidrs = var.public_api_access_allowed_cidrs
-    }
+  role_arn = aws_iam_role.eks_cluster.arn
+  version  = var.k8s_version
+  tags     = var.tags
 
-    depends_on = [
-        aws_iam_role_policy_attachment.eks_cluster_policy
-    ]
+  vpc_config {
+    subnet_ids              = var.private_app_subnet_ids
+    endpoint_public_access  = var.public_api_endpoint_access
+    endpoint_private_access = var.private_api_endpoint_access
+    public_access_cidrs     = var.public_api_access_allowed_cidrs
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_cluster_policy
+  ]
 }
 
 resource "aws_eks_node_group" "vprofile_node_group" {
@@ -159,35 +184,61 @@ resource "aws_eks_pod_identity_association" "vpc_cni" {
   ]
 }
 
+resource "aws_eks_pod_identity_association" "ebs_csi" {
+  cluster_name    = aws_eks_cluster.vprofile_eks_cluster.name
+  namespace       = "kube-system"
+  service_account = "ebs-csi-controller-sa"
+  role_arn        = aws_iam_role.ebs_csi.arn
+
+  depends_on = [
+    aws_eks_addon.pod_identity_agent,
+    aws_iam_role_policy_attachment.ebs_csi
+  ]
+}
+
 resource "aws_eks_addon" "pod_identity_agent" {
-    cluster_name = aws_eks_cluster.vprofile_eks_cluster.name
-    addon_name = "eks-pod-identity-agent"
+  cluster_name = aws_eks_cluster.vprofile_eks_cluster.name
+  addon_name   = "eks-pod-identity-agent"
 }
 
 resource "aws_eks_addon" "vpc_cni" {
-    cluster_name = aws_eks_cluster.vprofile_eks_cluster.name
-    addon_name = "vpc-cni"
+  cluster_name = aws_eks_cluster.vprofile_eks_cluster.name
+  addon_name   = "vpc-cni"
+}
+
+resource "aws_eks_addon" "ebs_csi" {
+  cluster_name = aws_eks_cluster.vprofile_eks_cluster.name
+  addon_name   = "aws-ebs-csi-driver"
+
+  depends_on = [
+    aws_eks_node_group.vprofile_node_group,
+    aws_eks_addon.pod_identity_agent,
+    aws_eks_pod_identity_association.ebs_csi,
+    aws_iam_role_policy_attachment.ebs_csi
+  ]
+
+  tags = var.tags
 }
 
 resource "aws_eks_addon" "coredns" {
-    cluster_name = aws_eks_cluster.vprofile_eks_cluster.name
-    addon_name = "coredns"
+  cluster_name = aws_eks_cluster.vprofile_eks_cluster.name
+  addon_name   = "coredns"
 
-    depends_on = [
-        aws_eks_node_group.vprofile_node_group
-    ]
+  depends_on = [
+    aws_eks_node_group.vprofile_node_group
+  ]
 }
 
 resource "aws_eks_addon" "kube_proxy" {
-    cluster_name = aws_eks_cluster.vprofile_eks_cluster.name
-    addon_name = "kube-proxy"
+  cluster_name = aws_eks_cluster.vprofile_eks_cluster.name
+  addon_name   = "kube-proxy"
 }
 
 # Give platform admin role access to cluster
 resource "aws_eks_access_entry" "platform_admin" {
-  cluster_name      = aws_eks_cluster.vprofile_eks_cluster.name
-  principal_arn     = aws_iam_role.platform_admin.arn
-  type              = "STANDARD"
+  cluster_name  = aws_eks_cluster.vprofile_eks_cluster.name
+  principal_arn = aws_iam_role.platform_admin.arn
+  type          = "STANDARD"
 }
 
 resource "aws_eks_access_policy_association" "cluster_admin" {
@@ -196,7 +247,7 @@ resource "aws_eks_access_policy_association" "cluster_admin" {
   principal_arn = aws_iam_role.platform_admin.arn
 
   access_scope {
-    type       = "cluster"
+    type = "cluster"
   }
 
   depends_on = [

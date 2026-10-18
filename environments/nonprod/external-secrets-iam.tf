@@ -13,7 +13,8 @@ resource "aws_iam_policy" "external_secrets" {
         ]
         Resource = [
           "arn:aws:secretsmanager:us-east-1:464209272334:secret:vprofile/nonprod/rabbitmq-gs9l2P",
-          data.aws_secretsmanager_secret.mysql_app.arn
+          data.aws_secretsmanager_secret.mysql_app.arn,
+          data.aws_secretsmanager_secret.grafana_admin.arn
         ]
       },
       {
