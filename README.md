@@ -9,3 +9,4 @@ architecture documentation for the project.
 
 - [Architecture](docs/architecture/README.md)
 - [Architecture Decision Records](docs/adr/)
+- [Deployment and Teardown Runbook](docs/deployment.md)
