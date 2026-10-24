@@ -17,3 +17,8 @@ output "node_group_name" {
 output "cluster_security_group_id" {
     value = aws_eks_cluster.vprofile_eks_cluster.vpc_config[0].cluster_security_group_id
 }
+
+output "platform_admin_role_arn" {
+  description = "ARN of the IAM role used for EKS platform administration"
+  value       = aws_iam_role.platform_admin.arn
+}

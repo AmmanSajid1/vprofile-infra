@@ -127,8 +127,4 @@ resource "helm_release" "monitoring" {
       }
     })
   ]
-
-  depends_on = [
-    kubernetes_storage_class_v1.gp3
-  ]
 }

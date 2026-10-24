@@ -17,3 +17,9 @@ output "master_user_secret_arn" {
   description = "ARN of the Secrets Manager secret containing the RDS master credentials"
   value       = module.rds.master_user_secret_arn
 }
+
+output "platform_admin_role_arn" {
+  description = "ARN of the platform administrator IAM role"
+  value       = module.eks.platform_admin_role_arn
+}
+
