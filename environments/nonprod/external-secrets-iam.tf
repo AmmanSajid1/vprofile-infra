@@ -14,7 +14,8 @@ resource "aws_iam_policy" "external_secrets" {
         Resource = [
           "arn:aws:secretsmanager:us-east-1:464209272334:secret:vprofile/nonprod/rabbitmq-gs9l2P",
           data.aws_secretsmanager_secret.mysql_app.arn,
-          data.aws_secretsmanager_secret.grafana_admin.arn
+          data.aws_secretsmanager_secret.grafana_admin.arn,
+          data.aws_secretsmanager_secret.staging_mysql_app.arn
         ]
       },
       {
@@ -23,7 +24,8 @@ resource "aws_iam_policy" "external_secrets" {
           "ssm:GetParameter"
         ]
         Resource = [
-          aws_ssm_parameter.rds_endpoint.arn
+          aws_ssm_parameter.rds_endpoint.arn,
+          aws_ssm_parameter.staging_rds_endpoint.arn
         ]
       }
     ]
